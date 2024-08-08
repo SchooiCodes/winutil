@@ -50,7 +50,11 @@ If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-
     Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
     Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
     Write-Host "===========================================" -Foregroundcolor Red
-    break
+    if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
+        $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
+        Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+        exit
+    }
 }
 
 # Set PowerShell window title
